@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luas &amp; Keliling Persegi Panjang</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            color-scheme: light;
+            --ocean-deep: #083344;
+            --ocean: #0e7490;
+            --ocean-bright: #06b6d4;
+            --ocean-pale: #ecfeff;
+            --text-muted: #587783;
+        }
+
+        body {
+            position: relative;
+            isolation: isolate;
+            overflow-x: hidden;
+            min-height: 100vh;
+            margin: 0;
+            padding: 32px 16px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(145deg, #cffafe 0%, #e0f2fe 45%, #f0fdfa 100%);
+            background-size: 180% 180%;
+            animation: ocean-drift 18s ease-in-out infinite alternate;
+            color: #164e63;
+            font-family: Arial, sans-serif;
+        }
+
+        body::before,
+        body::after {
+            position: fixed;
+            z-index: -1;
+            width: 340px;
+            height: 340px;
+            border: 1px solid rgb(255 255 255 / 45%);
+            border-radius: 50%;
+            background: rgb(34 211 238 / 12%);
+            content: "";
+            pointer-events: none;
+        }
+
+        body::before {
+            top: -150px;
+            left: -110px;
+            animation: float 11s ease-in-out infinite;
+        }
+
+        body::after {
+            right: -130px;
+            bottom: -180px;
+            width: 440px;
+            height: 440px;
+            animation: float 14s ease-in-out infinite reverse;
+        }
+
+        main {
+            position: relative;
+            overflow: hidden;
+            width: min(100%, 520px);
+            padding: 36px;
+            border: 1px solid rgb(255 255 255 / 80%);
+            border-radius: 24px;
+            background: rgb(255 255 255 / 88%);
+            box-shadow: 0 28px 70px rgb(8 51 68 / 17%), 0 4px 12px rgb(8 51 68 / 5%);
+            backdrop-filter: blur(12px);
+            animation: card-enter 700ms cubic-bezier(.2, .8, .2, 1) both;
+        }
+
+        main::before {
+            position: absolute;
+            inset: 0 0 auto;
+            height: 6px;
+            background: linear-gradient(90deg, var(--ocean), var(--ocean-bright), #5eead4);
+            content: "";
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+            color: var(--ocean);
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+        }
+
+        .eyebrow::before {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--ocean-bright);
+            box-shadow: 0 0 0 4px rgb(6 182 212 / 13%);
+            content: "";
+        }
+
+        .heading-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .heading-icon {
+            flex: 0 0 auto;
+            display: grid;
+            width: 48px;
+            height: 48px;
+            place-items: center;
+            border: 1px solid #c9f3f5;
+            border-radius: 15px;
+            background: linear-gradient(145deg, #ecfeff, #ccfbf1);
+            color: var(--ocean);
+        }
+
+        .heading-icon svg {
+            width: 25px;
+            height: 25px;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            color: var(--ocean-deep);
+            font-size: clamp(1.45rem, 5vw, 1.8rem);
+            letter-spacing: -.035em;
+            line-height: 1.2;
+        }
+
+        .description {
+            margin: 0 0 28px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .field {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 9px;
+            color: #164e63;
+            font-size: .92rem;
+            font-weight: 700;
+        }
+
+        .input-wrap {
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            border: 1px solid #c2dce2;
+            border-radius: 11px;
+            background: #f8feff;
+            transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+        }
+
+        .input-wrap:focus-within {
+            border-color: var(--ocean);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgb(6 182 212 / 14%);
+        }
+
+        input {
+            width: 100%;
+            min-width: 0;
+            padding: 13px 14px;
+            border: 0;
+            outline: none;
+            background: transparent;
+            color: var(--ocean-deep);
+            font: inherit;
+        }
+
+        .unit {
+            padding: 0 14px;
+            color: #62818b;
+            font-size: .9rem;
+            font-weight: 600;
+        }
+
+        button {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            margin-top: 6px;
+            padding: 14px 16px;
+            border: 0;
+            border-radius: 11px;
+            background: linear-gradient(105deg, #0e7490, #0891b2 65%, #06a6b8);
+            color: #fff;
+            cursor: pointer;
+            font: inherit;
+            font-weight: 600;
+            box-shadow: 0 8px 18px rgb(14 116 144 / 23%);
+            transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+        }
+
+        button svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        button:hover,
+        button:focus-visible {
+            transform: translateY(-2px);
+            filter: brightness(1.06);
+            box-shadow: 0 9px 18px rgb(14 116 144 / 28%);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .error {
+            min-height: 1.25em;
+            margin: 10px 0 0;
+            color: #be123c;
+            font-size: .9rem;
+        }
+
+        .results {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+            margin-top: 28px;
+            padding-top: 23px;
+            border-top: 1px solid #e1eff1;
+        }
+
+        .result {
+            min-width: 0;
+            padding: 17px;
+            border: 1px solid #d7f1f2;
+            border-radius: 14px;
+            background: linear-gradient(145deg, #f0fdff, #f0fdfa);
+            transition: transform 200ms ease, box-shadow 200ms ease;
+        }
+
+        .result:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 18px rgb(8 145 178 / 12%);
+        }
+
+        .result-label {
+            display: block;
+            margin-bottom: 9px;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+
+        .result strong {
+            color: var(--ocean);
+            font-size: clamp(1.15rem, 5vw, 1.45rem);
+            letter-spacing: -.025em;
+            overflow-wrap: anywhere;
+        }
+
+        .result sup {
+            font-size: .65em;
+        }
+
+        .results.is-updating .result {
+            animation: result-pop 420ms cubic-bezier(.2, .8, .2, 1) both;
+        }
+
+        .results.is-updating .result:nth-child(2) {
+            animation-delay: 70ms;
+        }
+
+        @keyframes ocean-drift {
+            from { background-position: 0% 30%; }
+            to { background-position: 100% 70%; }
+        }
+
+        @keyframes card-enter {
+            from { opacity: 0; transform: translateY(18px) scale(.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-18px) rotate(8deg); }
+        }
+
+        @keyframes result-pop {
+            0% { opacity: .65; transform: scale(.96); }
+            65% { transform: scale(1.035); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        @media (max-width: 380px) {
+            main {
+                padding: 28px 22px;
+            }
+
+            .results {
+                grid-template-columns: 1fr;
+            }
+
+            .heading-icon {
+                width: 42px;
+                height: 42px;
+                border-radius: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <span class="eyebrow">Kalkulator geometri</span>
+        <div class="heading-row">
+            <h1>Luas &amp; Keliling Persegi Panjang</h1>
+            <span class="heading-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3.5" y="5.5" width="17" height="13" rx="2"></rect>
+                    <path d="M8 5.5v3M12 5.5v2M16 5.5v3M8 18.5v-3M12 18.5v-2M16 18.5v-3"></path>
+                </svg>
+            </span>
+        </div>
+        <p class="description">Masukkan panjang dan lebar untuk menghitung hasilnya.</p>
+
+        <form id="rectangle-form">
+            <div class="field">
+                <label for="panjang">Panjang (m)</label>
+                <div class="input-wrap">
+                    <input id="panjang" name="panjang" type="number" min="0" step="any" value="" required>
+                    <span class="unit" aria-hidden="true">meter</span>
+                </div>
+            </div>
+            <div class="field">
+                <label for="lebar">Lebar (m)</label>
+                <div class="input-wrap">
+                    <input id="lebar" name="lebar" type="number" min="0" step="any" value="" required>
+                    <span class="unit" aria-hidden="true">meter</span>
+                </div>
+            </div>
+            <button type="submit">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M4 19V5M4 19h16M7 15l4-4 3 2 6-7"></path>
+                </svg>
+                Hitung ukuran
+            </button>
+            <p id="error" class="error" role="alert"></p>
+        </form>
+
+        <section class="results" aria-label="Hasil perhitungan">
+            <div class="result">
+                <span class="result-label">Luas</span>
+                <strong><span id="luas">—</span> m<sup>2</sup></strong>
+            </div>
+            <div class="result">
+                <span class="result-label">Keliling</span>
+                <strong><span id="keliling">—</span> m</strong>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const form = document.getElementById("rectangle-form");
+        const panjangInput = document.getElementById("panjang");
+        const lebarInput = document.getElementById("lebar");
+        const luasOutput = document.getElementById("luas");
+        const kelilingOutput = document.getElementById("keliling");
+        const errorOutput = document.getElementById("error");
+        const results = document.querySelector(".results");
+
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            results.classList.remove("is-updating");
+
+            const panjang = Number(panjangInput.value);
+            const lebar = Number(lebarInput.value);
+
+            if (panjang <= 0 || lebar <= 0) {
+                errorOutput.textContent = "Panjang dan lebar harus lebih dari 0.";
+                luasOutput.textContent = "—";
+                kelilingOutput.textContent = "—";
+                return;
+            }
+
+            errorOutput.textContent = "";
+            const luas = panjang * lebar;
+            const keliling = 2 * (panjang + lebar);
+
+            luasOutput.textContent = luas.toLocaleString("id-ID");
+            kelilingOutput.textContent = keliling.toLocaleString("id-ID");
+            requestAnimationFrame(function () {
+                results.classList.add("is-updating");
+            });
+        });
+
+        form.requestSubmit();
+    </script>
+</body>
+</html>
